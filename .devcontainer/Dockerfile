@@ -1,11 +1,7 @@
 # R + Python + Julia kernels
 FROM jupyter/datascience-notebook:x86_64-2023-03-06
-
-# Python kernel only
-# ROM jupyter/scipy-notebook:x86_64-2023-03-06
-
-# R kernel only
-# ROM jupyter/r-notebook:x86_64-2023-03-06
+# FROM jupyter/scipy-notebook:x86_64-2023-03-06
+# FROM jupyter/r-notebook:x86_64-2023-03-06
 
 USER root
 
@@ -15,15 +11,6 @@ RUN apt-get update && \
         lmodern file curl && \
     apt-get clean -y && \
     rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
-
-### R studio
-# RUN curl --silent -L --fail \
-#         https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2022.02.3-492-amd64.deb > /tmp/rstudio.deb && \
-#     apt-get update && \
-#     apt-get install -y --no-install-recommends \
-#         /tmp/rstudio.deb && \
-#     apt-get clean -y && \
-#     rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
 
 ### quarto
 # versions: https://quarto.org/docs/download/_download.json
