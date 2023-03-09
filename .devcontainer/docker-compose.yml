@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  jupyter:
+
+    build: 
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      GRANT_SUDO: 'yes'
+      RESTARTABLE: 'yes'
+      # default password is 'test_password'
+
+    volumes:
+      - ..:/home/jovyan/work:cached
+ 
+    # command:
+    #   - start.sh 
+    #   - jupyter
+    #   - lab
+    #   - --ServerApp.ip='127.0.0.1'
+    #   - --LabApp.token="${JUPYTER_TOKEN:-change_me}"
