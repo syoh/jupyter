@@ -10,9 +10,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         lmodern file curl && \
     apt-get clean -y && \
-    rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
+    rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
-### quarto
+### Quarto
 # versions: https://quarto.org/docs/download/_download.json
 # neat setup: https://github.com/jeremiahpslewis/reproducibility-with-quarto
 RUN curl --silent -L --fail \
@@ -20,6 +20,16 @@ RUN curl --silent -L --fail \
     apt-get update && \
     apt-get install -y --no-install-recommends /tmp/quarto.deb && \
     rm -rf /tmp/quarto.deb /var/lib/apt/lists/* /tmp/library-scripts
+
+### RStudio
+# RUN curl --silent -L --fail \
+#         https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2022.02.3-492-amd64.deb > /tmp/rstudio.deb && \
+#     apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#         /tmp/rstudio.deb lmodern file && \
+#     apt-get install -y cmake && \
+#     apt-get clean -y && \
+#     rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
 
 USER ${NB_USER}
 
@@ -31,3 +41,10 @@ RUN echo "echo \"Jupyter server token: \$(jupyter server list 2>&1 | grep -oP '(
 RUN pip install radian && \
     R -q -e 'install.packages(c("markdown", "languageserver", "httpgd"), repos="cloud.r-project.org")' &&\
     R -q -e 'remotes::install_github("ManuelHentschel/vscDebugger")'
+
+### RStudio
+# RUN pip install --no-cache-dir \
+#         jupyter-server-proxy==3.2.1 \
+#         jupyter-rsession-proxy==2.0.1 && \
+#     jupyter labextension install @jupyterlab/server-proxy@3.2.1 && \
+#     jupyter lab build
