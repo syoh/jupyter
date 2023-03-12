@@ -5,7 +5,7 @@ FROM jupyter/datascience-notebook:x86_64-2023-03-06
 
 USER root
 
-### system dependencies
+### System dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         lmodern file curl && \
@@ -22,18 +22,20 @@ RUN curl --silent -L --fail \
     rm -rf /tmp/quarto.deb /var/lib/apt/lists/* /tmp/library-scripts
 
 ### RStudio
-# RUN curl --silent -L --fail \
-#         https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2022.02.3-492-amd64.deb > /tmp/rstudio.deb && \
-#     apt-get update && \
-#     apt-get install -y --no-install-recommends \
-#         /tmp/rstudio.deb lmodern file && \
-#     apt-get install -y cmake && \
-#     apt-get clean -y && \
-#     rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
+# doesn't work on "jammy"
+# https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2022.12.0-353-amd64.deb
+# builds for recent ubuntu versions: https://dailies.rstudio.com/rstudio/cherry-blossom/server/jammy-amd64/
+RUN curl --silent -L --fail \
+        https://s3.amazonaws.com/rstudio-ide-build/server/jammy/amd64/rstudio-server-2023.03.0-386-amd64.deb > /tmp/rstudio.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        /tmp/rstudio.deb && \
+    apt-get clean -y && \
+    rm -rf /tmp/rstudio.deb /var/lib/apt/lists/* /tmp/library-scripts
 
 USER ${NB_USER}
 
-### prints Jupyter server token when terminal is opened
+### Prints Jupyter server token when terminal is opened
 RUN echo "echo \"Jupyter server token: \$(jupyter server list 2>&1 | grep -oP '(?<=token=)[[:alnum:]]*')\"" > ${HOME}/.get-jupyter-url.sh && \
     echo "sh \${HOME}/.get-jupyter-url.sh" >> ${HOME}/.bashrc
 
@@ -43,8 +45,8 @@ RUN pip install radian && \
     R -q -e 'remotes::install_github("ManuelHentschel/vscDebugger")'
 
 ### RStudio
-# RUN pip install --no-cache-dir \
-#         jupyter-server-proxy==3.2.1 \
-#         jupyter-rsession-proxy==2.0.1 && \
-#     jupyter labextension install @jupyterlab/server-proxy@3.2.1 && \
-#     jupyter lab build
+RUN pip install --no-cache-dir \
+        jupyter-server-proxy==3.2.1 \
+        jupyter-rsession-proxy==2.0.1 && \
+    jupyter labextension install @jupyterlab/server-proxy@3.2.1 && \
+    jupyter lab build
