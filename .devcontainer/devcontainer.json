@@ -4,13 +4,10 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "jupyter",
 	
-	// rstudio port forwarding
 	"forwardPorts": [8888],
 	"portsAttributes": {
 		"8888": {
-			"label": "Jupyter",
-			"requireLocalPort": true,
-			"onAutoForward": "ignore"
+			"label": "Jupyter"
 		}
 	},
 
