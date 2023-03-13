@@ -12,15 +12,11 @@ If the concept of containers are new to you, I recommend reading the section on 
 
 Devcontainer specification are given in file `.devcontainer/devcontainer.json`. The container images are [fully customizable](https://code.visualstudio.com/docs/devcontainers/create-dev-container#_path-to-creating-a-dev-container) using `Dockerfile` and `docker-compose.yml` that also live in `.devcontainer` directory. See the section on [What this repository provides](#what-this-repository-provides) for more details on customizing files in this repository.
 
-
 ## Using Python and R in container
 
 After starting up a [Codespace](https://code.visualstudio.com/docs/remote/codespaces#_getting-started) session or [VS Code devcontainer](https://code.visualstudio.com/docs/devcontainers/tutorial#_get-the-sample) environment with this repository, open the command palette (`Ctrl+Shift+P`), and start typing `Ports: Focus on Ports View`.
 
-In Ports View, you will see an entry that says "RStudio (8787)". Click on the link under "Local Address" to open a browser window to login to your RStudio server!! The default username is `rstudio`, and the default password is `test-password` (See below for [changing the password](#changing-rstudio-password)).
-
-![ports-view-command](images/ports-view.png)
-![ports-view-pane](images/ports-view-open.png)
+In Ports View, you will see an entry that says "Jupyter (8888)". Click on the link under "Local Address" to open a browser window to login to your Jupyter server!! The security token can be obtained when you open a terminal in VS Code (`` Ctrl+` ``). The password can be changed by using the interface at the bottom of the login screen.
 
 ## What this repository provides
 
@@ -36,24 +32,17 @@ Following files in this repository are the essential pieces for running RStudio 
 
 ### Development environment: `Dockerfile`
 
-[`Dockerfile`](.devcontainer/Dockerfile) specifies the content of the container image. Modifying this file will customize the contents of your devcontainer: e.g. system libraries, R, and RStudio.
-
-As the first line suggests, the `Dockerfile` extends a [`tidyverse` image](https://rocker-project.org/images/versioned/rstudio.html) from Rocker project. The additions in the `Dockerfile` are:
-
-- Minimal python installation from [Jupyter project's base-notebook image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-base-notebook). This is mostly to install `radian` package for R terminal.
-- System libraries, `curl` and `libxt6` (to remove a warning message)
-- [Quarto](https://quarto.org) publishing system and `tinytex`
-- Other packages to support VS Code extensions for R and Rmarkdown: `languageserver`, 'httpgd', 'ManuelHentschel/vscDebugger`.
+[`Dockerfile`](.devcontainer/Dockerfile) specifies the content of the container image. Modifying this file will customize the contents of your devcontainer: e.g. system libraries, Python and R packages, and RStudio.
 
 For example, adding the folliwng line installs an R package, `devtools`:
 ```Dockerfile
-RUN install2.r devtools
+RUN R -q -e 'install.packages("devtools", repos="cloud.r-project.org")'
 ```
 Adding the following line installs a Python package using `pip`:
 ```Dockerfile
 RUN pip install pyjoke
 ```
-Adding the following lines install a system package for Ubuntu (underlying OS for the base image being used).
+Adding the following lines between `USER root` and `USER ${NB_USER}` lines will install a system package for Ubuntu (underlying OS for the base image being used).
 ```Dockerfile
 RUN apt update && \
     apt install -y --no-install-recommends curl && \
@@ -63,4 +52,4 @@ Reference: [installing system packages](https://docs.docker.com/develop/develop-
 
 ### Container launch configuration: `docker-compose.yml`
 
-[`docker-compose.yml`](.devcontainer/docker-compose.yml) specifies container initialization and sets environment variables. One important role of `docker-compose.yml` is setting the password for RStudio access. See above for the section on [changing the password](#changing-rstudio-password).
+[`docker-compose.yml`](.devcontainer/docker-compose.yml) specifies container initialization and sets environment variables. See Jupyter documentation on [docker options](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#docker-options) that can be set. Note that Jupyter lab is set to restart: i.e. `RESTARTABLE: 'yes'`.
